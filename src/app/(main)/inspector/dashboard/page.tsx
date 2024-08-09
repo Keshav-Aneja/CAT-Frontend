@@ -11,7 +11,6 @@ export default function InpectorDashboard() {
       <Navbar />
       <main className="w-[80%] mx-auto flex flex-col gap-16">
         <InspectorHeader />
-
         <div className="w-full flex flex-col gap-6">
           <h1 className="text-3xl font-semibold">Recent Reports</h1>
           <div className="w-full grid grid-cols-3 gap-4">
