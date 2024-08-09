@@ -7,7 +7,6 @@ import { Button } from "../ui/button";
 import images from "@/constants/images";
 import Image from "next/image";
 import { z } from "zod";
-import { set } from "date-fns";
 
 export const HeaderSchema = z.object({
   truckSerialNumber: z.string(),
@@ -25,16 +24,23 @@ export type HeadersSchemaType = z.infer<typeof HeaderSchema>;
 export default function Recorder({
   setShow,
   setData,
+  autoStart,
+  autoStop,
+  action,
 }: {
-  setShow: Dispatch<SetStateAction<boolean>>;
-  setData: Dispatch<SetStateAction<HeadersSchemaType | null>>;
+  setShow?: Dispatch<SetStateAction<boolean>>;
+  setData: Dispatch<SetStateAction<any>>;
+  action: any;
+  autoStart?: boolean;
+  autoStop?: boolean;
 }) {
   const [result, setResult] = useState<null | HeadersSchemaType>(null);
   const [recording, setRecording] = useState(false);
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
     null
-  ); // This array will hold the audio data
+  );
   let chunks: BlobPart[] = [];
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       navigator.mediaDevices
@@ -60,37 +66,53 @@ export default function Recorder({
             reader.onloadend = async function () {
               const base64Audio = (reader.result as string).split(",")[1]; // Remove the data URL prefix
               console.log(base64Audio);
-              const response = await handleFormSubmission(base64Audio);
+              const response = await action(base64Audio);
               setResult(response);
             };
           };
           setMediaRecorder(newMediaRecorder);
+
+          // Automatically start recording if autoStart is true
+          if (autoStart) {
+            newMediaRecorder.start();
+            setRecording(true);
+
+            setTimeout(() => {
+              setRecording(false);
+              newMediaRecorder.stop();
+            }, 5000);
+          }
         })
         .catch((err) => console.error("Error accessing microphone:", err));
     }
-  }, []);
+  }, [autoStart]);
+
   const startRecording = () => {
     if (mediaRecorder) {
       mediaRecorder.start();
       setRecording(true);
     }
   };
+
   const stopRecording = () => {
     if (mediaRecorder) {
       mediaRecorder.stop();
       setRecording(false);
     }
   };
+
   useEffect(() => {
     if (result) {
       setData(result);
-      setShow(true);
+      setShow && setShow(true);
     }
   }, [result]);
+
   return (
     <main className="">
       <div
-        className="  group w-full h-[50vh] flex flex-col text-3xl items-center justify-center gap-4 text-muted-foreground bg-primary/10 rounded-2xl hover:bg-primary/20 transition-all duration-200 ease-linear cursor-pointer"
+        className="group w-full h-[50vh] flex flex-col text-3xl items-center justify-center gap-4 text-muted-foreground bg-primary/10 rounded-2xl hover:bg-primary/20 transition-all duration-200 ease-linear cursor-pointer"
+        id="recorder"
         onClick={recording ? stopRecording : startRecording}
       >
         {!recording && <FaMicrophone size={70} />}
