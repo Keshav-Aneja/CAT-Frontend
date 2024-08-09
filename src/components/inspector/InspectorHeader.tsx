@@ -17,7 +17,9 @@ import {
 import { Input } from "../ui/input";
 import { toast } from "../ui/use-toast";
 import { createReport } from "@/services/reports.service";
+import { useRouter } from "next/navigation";
 const InspectorHeader = () => {
+  const router = useRouter();
   const [reportTitle, setReportTitle] = useState("");
   const [position, setPosition] = useState<[number, number] | null>(null);
   useEffect(() => {
@@ -44,12 +46,13 @@ const InspectorHeader = () => {
       }
       const response = await createReport({
         name: reportTitle,
-        location: position,
+        location: JSON.stringify(position),
       });
       toast({
         title: "Success",
         description: "Report created successfully!",
       });
+      router.push(`/dashboard/create/${response.data.reportId}`);
     } catch (error: any) {
       toast({
         title: "Error",

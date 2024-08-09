@@ -1,4 +1,4 @@
 import Logo from "@/assets/images/logo.png";
-
-const images = { Logo };
+import Loader from "@/assets/images/loader.svg";
+const images = { Logo, Loader };
 export default images;

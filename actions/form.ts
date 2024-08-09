@@ -5,7 +5,7 @@ import { z } from "zod";
 import { zodResponseFormat } from "openai/helpers/zod";
 import openai from "@/config/openai";
 
-export const HeaderSchema = z.object({
+const HeaderSchema = z.object({
   truckSerialNumber: z.string(),
   truckModel: z.string(),
   inspectionId: z.string(),
@@ -16,12 +16,12 @@ export const HeaderSchema = z.object({
   CATCustomerId: z.string(),
 });
 
-export type HeadersSchemaType = z.infer<typeof HeaderSchema>;
+type HeadersSchemaType = z.infer<typeof HeaderSchema>;
 
 export async function handleFormSubmission(audioBlob: string) {
   const buffer = Buffer.from(audioBlob, "base64");
 
-  const tempFilePath = `/tmp/recording-${Date.now()}.webm`;
+  const tempFilePath = `./public/recording-${Date.now()}.webm`;
   fs.writeFileSync(tempFilePath, buffer);
 
   const transcription = await openai.audio.transcriptions.create({
@@ -45,5 +45,5 @@ export async function handleFormSubmission(audioBlob: string) {
       },
     ],
   });
-  return completion.choices[0].message.parsed
+  return completion.choices[0].message.parsed;
 }

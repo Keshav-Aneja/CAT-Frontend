@@ -2,7 +2,7 @@ import postHandler from "@/handlers/post_handler";
 
 export async function createReport(data: any) {
   try {
-    const response = await postHandler("/reports/create", data);
+    const response = await postHandler("/report/start", data);
     if (!response.success) {
       throw new Error(response.message);
     }

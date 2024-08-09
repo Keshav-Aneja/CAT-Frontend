@@ -8,7 +8,6 @@ import { FaPlus } from "react-icons/fa";
 export default function InpectorDashboard() {
   return (
     <div className="flex flex-col gap-16">
-      <Navbar />
       <main className="w-[80%] mx-auto flex flex-col gap-16">
         <InspectorHeader />
         <div className="w-full flex flex-col gap-6">
